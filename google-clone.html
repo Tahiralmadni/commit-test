@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google Clone</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        nav {
+            display: flex;
+            justify-content: flex-end;
+            padding: 15px;
+        }
+
+        nav a {
+            margin: 0 10px;
+            text-decoration: none;
+            color: #000;
+            font-size: 13px;
+        }
+
+        .main {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 100px;
+        }
+
+        .logo {
+            margin-bottom: 30px;
+        }
+
+        .search-wrapper {
+            width: 100%;
+            max-width: 584px;
+            margin: 0 auto;
+        }
+
+        .search-box {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            border: 1px solid #dfe1e5;
+            border-radius: 24px;
+            padding: 8px 16px;
+            margin-bottom: 20px;
+        }
+
+        .search-box:hover {
+            box-shadow: 0 1px 6px rgba(32, 33, 36, 0.28);
+        }
+
+        .search-input {
+            flex: 1;
+            border: none;
+            outline: none;
+            font-size: 16px;
+            padding: 0 8px;
+        }
+
+        .search-buttons {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+        }
+
+        .search-btn {
+            background-color: #f8f9fa;
+            border: 1px solid #f8f9fa;
+            border-radius: 4px;
+            color: #3c4043;
+            font-size: 14px;
+            padding: 8px 16px;
+            cursor: pointer;
+        }
+
+        .search-btn:hover {
+            border-color: #dadce0;
+            box-shadow: 0 1px 1px rgba(0, 0, 0, .1);
+        }
+
+        #results {
+            max-width: 584px;
+            margin: 20px auto;
+            padding: 20px;
+        }
+
+        .result-item {
+            margin-bottom: 20px;
+        }
+
+        .result-title {
+            color: #1a0dab;
+            font-size: 18px;
+            margin-bottom: 5px;
+            text-decoration: none;
+        }
+
+        .result-url {
+            color: #006621;
+            font-size: 14px;
+        }
+
+        .result-description {
+            color: #545454;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="#">Gmail</a>
+        <a href="#">Images</a>
+    </nav>
+
+    <div class="main">
+        <div class="logo">
+            <img src="https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png" alt="Google">
+        </div>
+
+        <div class="search-wrapper">
+            <div class="search-box">
+                <input type="text" class="search-input" id="searchInput">
+            </div>
+            <div class="search-buttons">
+                <button class="search-btn" onclick="search()">Google Search</button>
+                <button class="search-btn">I'm Feeling Lucky</button>
+            </div>
+        </div>
+
+        <div id="results"></div>
+    </div>
+
+    <script>
+        // Replace these with your actual credentials from steps above
+        const API_KEY = 'PASTE_YOUR_API_KEY_HERE'; // From Google Cloud Console
+        const SEARCH_ENGINE_ID = 'PASTE_YOUR_SEARCH_ENGINE_ID_HERE'; // From Programmable Search Engine
+
+        document.getElementById('searchInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                search();
+            }
+        });
+
+        async function search() {
+            const query = document.getElementById('searchInput').value;
+            if (!query) return;
+
+            const url = `https://www.googleapis.com/customsearch/v1?key=${API_KEY}&cx=${SEARCH_ENGINE_ID}&q=${encodeURIComponent(query)}`;
+
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+                displayResults(data.items);
+            } catch (error) {
+                console.error('Search error:', error);
+            }
+        }
+
+        function displayResults(items) {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = '';
+
+            if (!items) return;
+
+            items.forEach(item => {
+                const resultItem = document.createElement('div');
+                resultItem.className = 'result-item';
+                resultItem.innerHTML = `
+                    <a href="${item.link}" class="result-title">${item.title}</a>
+                    <div class="result-url">${item.link}</div>
+                    <div class="result-description">${item.snippet}</div>
+                `;
+                resultsDiv.appendChild(resultItem);
+            });
+        }
+    </script>
+</body>
+</html>
